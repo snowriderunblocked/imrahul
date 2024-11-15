@@ -3,57 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fancy Text Generator</title>
+    <title>Money Counter App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        input, button {
-            padding: 10px;
-            margin: 10px 0;
-            width: 100%;
-            font-size: 16px;
-        }
-        .output {
-            margin-top: 20px;
-            font-size: 18px;
+        /* Additional custom styles */
+        .card {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
     </style>
 </head>
-<body>
-    <h1>Fancy Text Generator</h1>
-    <p>Enter your text below to generate fancy versions:</p>
-    <input type="text" id="inputText" placeholder="Enter text here">
-    <button onclick="generateFancyText()">Generate Fancy Text</button>
-    
-    <div class="output">
-        <p><strong>Bold:</strong> <span id="boldText"></span></p>
-        <p><strong>Italic:</strong> <span id="italicText"></span></p>
-        <p><strong>Script Style:</strong> <span id="scriptText"></span></p>
-    </div>
+<body class="min-h-screen flex flex-col bg-gray-100">
+    <header class="bg-blue-600 text-white py-4">
+        <div class="container mx-auto px-4">
+            <h1 class="text-2xl font-bold">Money Counter App</h1>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <div class="card bg-white rounded-lg p-6 w-full max-w-2xl mx-auto">
+            <h2 class="text-2xl font-bold mb-4">Money Counter</h2>
+            <div class="grid gap-6 md:grid-cols-2">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Notes</h3>
+                    <div id="notes-inputs"></div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Coins</h3>
+                    <div id="coins-inputs"></div>
+                </div>
+            </div>
+            <div class="flex items-center justify-between mt-6 pt-4 border-t">
+                <span class="text-lg font-semibold">Total</span>
+                <span id="total" class="text-2xl font-bold">0.00</span>
+            </div>
+            <div class="mt-6">
+                <button id="reset-btn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">Reset</button>
+            </div>
+        </div>
+
+        <div class="mt-8 max-w-2xl mx-auto">
+            <h2 class="text-xl font-semibold mb-4">How to Use</h2>
+            <p class="mb-4">
+                Enter the quantity of each denomination in the input fields. The total will be calculated automatically.
+                Use the reset button to clear all inputs.
+            </p>
+            <h2 class="text-xl font-semibold mb-4">About Cash Calculation</h2>
+            <p>
+                This money counting calculator works by summing the products of each denomination and its quantity.
+                For example, 5 x $100 bills plus 12 x $10 bills would be calculated as: 100 × 5 + 10 × 12 = 620.
+            </p>
+        </div>
+    </main>
+
+    <footer class="bg-gray-200 py-4 mt-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2024 Money Counter App. All rights reserved.</p>
+        </div>
+    </footer>
 
     <script>
-        const boldChars = [...'𝐀𝐁𝐂𝐃𝐄𝐅𝐆𝐇𝐈𝐉𝐊𝐋𝐌𝐍𝐎𝐏𝐐𝐑𝐒𝐓𝐔𝐕𝐖𝐗𝐘𝐙abcdefghijklmnopqrstuvwxyz0123456789'];
-        const italicChars = [...'𝘈𝘉𝘊𝘋𝘌𝘍𝘎𝘏𝘐𝘑𝘒𝘓𝘔𝘕𝘖𝘗𝘘𝘙𝘚𝘛𝘜𝘝𝘞𝘟𝘠𝘡𝘢𝘣𝘤𝘥𝘦𝘧𝘨𝘩𝘪𝘫𝘬𝘭𝘮𝘯𝘰𝘱𝘲𝘳𝘴𝘵𝘶𝘷𝘸𝘹𝘺𝘻0123456789'];
-        const scriptChars = [...'𝒜𝐵𝒞𝒟𝐸𝐹𝒢𝐻𝐼𝒥𝒦𝐿𝑀𝒩𝒪𝒫𝒬𝑅𝒮𝒯𝒰𝒱𝒲𝒳𝒴𝒵𝒶𝒷𝒸𝒹𝑒𝒻𝑔𝒽𝒾𝒿𝓀𝓁𝓂𝓃𝑜𝓅𝓆𝓇𝓈𝓉𝓊𝓋𝓌𝓍𝓎𝓏0123456789'];
+        const denominations = [
+            { value: 2000, label: '2000', isNote: true },
+            { value: 1000, label: '1000', isNote: true },
+            { value: 500, label: '500', isNote: true },
+            { value: 200, label: '200', isNote: true },
+            { value: 100, label: '100', isNote: true },
+            { value: 50, label: '50', isNote: true },
+            { value: 20, label: '20', isNote: true },
+            { value: 10, label: '10', isNote: true },
+            { value: 5, label: '5', isNote: true },
+            { value: 2, label: '2', isNote: true },
+            { value: 1, label: '1', isNote: true },
+            { value: 0.5, label: '50', isNote: false },
+            { value: 0.25, label: '25', isNote: false },
+            { value: 0.1, label: '10', isNote: false },
+            { value: 0.05, label: '5', isNote: false },
+            { value: 0.01, label: '1', isNote: false },
+        ];
 
-        const normalChars = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'];
-
-        function convertText(text, fancyChars) {
-            return text.split('').map(char => {
-                let index = normalChars.indexOf(char);
-                return index > -1 ? fancyChars[index] : char;
-            }).join('');
+        function createInput(denomination) {
+            const div = document.createElement('div');
+            div.className = 'flex items-center justify-between space-x-4 mb-2';
+            div.innerHTML = `
+                <label for="input-${denomination.value}" class="w-16 text-right">${denomination.label}</label>
+                <input id="input-${denomination.value}" type="number" min="0" value="0"
+                    class="w-24 px-2 py-1 border rounded" data-value="${denomination.value}">
+                <span class="w-24 text-right">0.00</span>
+            `;
+            return div;
         }
 
-        function generateFancyText() {
-            const inputText = document.getElementById('inputText').value;
+        function initialize() {
+            const notesContainer = document.getElementById('notes-inputs');
+            const coinsContainer = document.getElementById('coins-inputs');
 
-            document.getElementById('boldText').textContent = convertText(inputText, boldChars);
-            document.getElementById('italicText').textContent = convertText(inputText, italicChars);
-            document.getElementById('scriptText').textContent = convertText(inputText, scriptChars);
+            denominations.forEach(d => {
+                const input = createInput(d);
+                if (d.isNote) {
+                    notesContainer.appendChild(input);
+                } else {
+                    coinsContainer.appendChild(input);
+                }
+            });
+
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                input.addEventListener('input', updateTotal);
+            });
+
+            document.getElementById('reset-btn').addEventListener('click', resetInputs);
         }
+
+        function updateTotal() {
+            let total = 0;
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                const value = parseFloat(input.value) || 0;
+                const denomination = parseFloat(input.dataset.value);
+                total += value * denomination;
+                input.nextElementSibling.textContent = (value * denomination).toFixed(2);
+            });
+            document.getElementById('total').textContent = total.toFixed(2);
+        }
+
+        function resetInputs() {
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                input.value = '0';
+                input.nextElementSibling.textContent = '0.00';
+            });
+            document.getElementById('total').textContent = '0.00';
+        }
+
+        initialize();
     </script>
 </body>
 </html>
